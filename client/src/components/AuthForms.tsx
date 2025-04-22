@@ -49,7 +49,12 @@ const AuthForms = ({ activeTab }: AuthFormsProps) => {
         title: "Success",
         description: "You have been logged in successfully!",
       });
-      setLocation("/dashboard");
+      
+      // Make sure to redirect the user to the dashboard with a slight delay
+      // to ensure the state updates properly
+      setTimeout(() => {
+        setLocation("/dashboard");
+      }, 500);
     } catch (error) {
       toast({
         title: "Login Failed",

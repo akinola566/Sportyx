@@ -13,23 +13,42 @@ import { apiRequest } from "./lib/queryClient";
 
 function Router() {
   const [location, setLocation] = useLocation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Check authentication status on mount
+  // Check authentication status on mount and on location change
   useEffect(() => {
     const checkAuth = async () => {
+      setIsLoading(true);
       try {
-        const res = await apiRequest("GET", "/api/auth/check", undefined);
-        if (res.ok) {
-          setIsAuthenticated(true);
-        }
+        const response = await apiRequest("GET", "/api/auth/check", undefined);
+        // apiRequest returns the parsed JSON data, not a Response object
+        const authData = response as unknown as { isAuthenticated: boolean };
+        setIsAuthenticated(authData?.isAuthenticated || false);
       } catch (error) {
-        // User is not authenticated
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
       }
     };
     
     checkAuth();
-  }, []);
+  }, [location]);
+
+  // If on dashboard and not authenticated, redirect to login
+  useEffect(() => {
+    if (isAuthenticated === false && location === "/dashboard") {
+      setLocation("/auth/login");
+    }
+  }, [isAuthenticated, location, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <Switch>
@@ -44,7 +63,7 @@ function Router() {
         {() => <AuthPage isLogin={false} />}
       </Route>
       <Route path="/dashboard">
-        {() => isAuthenticated ? <DashboardPage /> : (setLocation("/auth/login"), null)}
+        {() => <DashboardPage />}
       </Route>
       <Route component={NotFound} />
     </Switch>

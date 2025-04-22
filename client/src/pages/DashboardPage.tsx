@@ -14,9 +14,27 @@ const DashboardPage = () => {
   const queryClient = useQueryClient();
   const [username, setUsername] = useState<string>("");
 
+  // Define types for user data and activation status
+  interface UserData {
+    id: number;
+    username: string;
+    email: string;
+    phoneNumber: string;
+    isIdActivated: boolean;
+  }
+
+  interface ActivationStatus {
+    isActivated: boolean;
+  }
+
   // Fetch user data
-  const { data: userData, isLoading: isLoadingUser } = useQuery({
+  const { data: userData, isLoading: isLoadingUser } = useQuery<UserData>({
     queryKey: ["/api/auth/me"],
+    retry: 2,
+    retryDelay: 1000,
+    onSuccess: (data) => {
+      setUsername(data.username);
+    },
     onError: () => {
       toast({
         title: "Authentication Error",
@@ -28,8 +46,11 @@ const DashboardPage = () => {
   });
 
   // Check if user's ID is activated
-  const { data: activationStatus, isLoading: isLoadingActivation } = useQuery({
+  const { data: activationStatus, isLoading: isLoadingActivation } = useQuery<ActivationStatus>({
     queryKey: ["/api/user/activation-status"],
+    retry: 2,
+    retryDelay: 1000,
+    enabled: !!userData, // Only run this query if user data is available
     onError: () => {
       toast({
         title: "Error",
