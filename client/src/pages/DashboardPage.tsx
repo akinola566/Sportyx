@@ -32,18 +32,26 @@ const DashboardPage = () => {
     queryKey: ["/api/auth/me"],
     retry: 2,
     retryDelay: 1000,
-    onSuccess: (data) => {
-      setUsername(data.username);
-    },
-    onError: () => {
+  });
+
+  // Set username when userData changes
+  useEffect(() => {
+    if (userData?.username) {
+      setUsername(userData.username);
+    }
+  }, [userData]);
+
+  // Handle authentication errors
+  useEffect(() => {
+    if (isLoadingUser === false && !userData) {
       toast({
         title: "Authentication Error",
         description: "Please login again",
         variant: "destructive",
       });
       setLocation("/auth/login");
-    },
-  });
+    }
+  }, [isLoadingUser, userData, toast, setLocation]);
 
   // Check if user's ID is activated
   const { data: activationStatus, isLoading: isLoadingActivation } = useQuery<ActivationStatus>({
@@ -51,20 +59,9 @@ const DashboardPage = () => {
     retry: 2,
     retryDelay: 1000,
     enabled: !!userData, // Only run this query if user data is available
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to check activation status",
-        variant: "destructive",
-      });
-    },
   });
 
-  useEffect(() => {
-    if (userData) {
-      setUsername(userData.username);
-    }
-  }, [userData]);
+  // This effect is now handled above
 
   const handleLogout = async () => {
     try {

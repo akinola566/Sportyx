@@ -45,23 +45,24 @@ const AuthForms = ({ activeTab }: AuthFormsProps) => {
     setIsLoading(true);
     try {
       await apiRequest("POST", "/api/auth/login", data);
+      
+      // Successfully logged in
       toast({
         title: "Success",
         description: "You have been logged in successfully!",
       });
       
-      // Make sure to redirect the user to the dashboard with a slight delay
-      // to ensure the state updates properly
-      setTimeout(() => {
-        setLocation("/dashboard");
-      }, 500);
+      // Clear any previous queries
+      queryClient.invalidateQueries();
+      
+      // Force a direct navigation to the dashboard page
+      window.location.href = "/dashboard";
     } catch (error) {
       toast({
         title: "Login Failed",
         description: "Invalid email/username or password",
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };

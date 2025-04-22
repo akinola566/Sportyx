@@ -21,9 +21,8 @@ function Router() {
     const checkAuth = async () => {
       setIsLoading(true);
       try {
-        const response = await apiRequest("GET", "/api/auth/check", undefined);
-        // apiRequest returns the parsed JSON data, not a Response object
-        const authData = response as unknown as { isAuthenticated: boolean };
+        // Use type parameter to specify the expected response format
+        const authData = await apiRequest<{ isAuthenticated: boolean }>("GET", "/api/auth/check", undefined);
         setIsAuthenticated(authData?.isAuthenticated || false);
       } catch (error) {
         setIsAuthenticated(false);
