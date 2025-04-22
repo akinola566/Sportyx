@@ -1,8 +1,9 @@
-import { Phone } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const WhatsAppButton = () => {
-  const whatsappNumber = "08100096815";
+  // Include Nigerian country code (+234) but remove the leading 0
+  const whatsappNumber = "2348100096815";
   const whatsappUrl = `https://wa.me/${whatsappNumber}`;
   
   return (
@@ -15,7 +16,7 @@ const WhatsAppButton = () => {
       <Button
         className="bg-green-500 hover:bg-green-600 text-white p-3 h-14 w-14 rounded-full shadow-lg transition-all flex items-center justify-center"
       >
-        <i className="fab fa-whatsapp text-2xl"></i>
+        <MessageCircle className="h-6 w-6" />
       </Button>
     </a>
   );

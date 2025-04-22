@@ -64,7 +64,7 @@ const IdActivation = () => {
         </Button>
       </div>
       <p className="mt-4 text-gray-600">
-        Don't have an ID? <a href="https://wa.me/08100096815" target="_blank" className="text-primary hover:underline">Chat Now</a> to get yours!
+        Don't have an ID? <a href="https://wa.me/2348100096815" target="_blank" className="text-primary hover:underline">Chat Now</a> to get yours!
       </p>
     </div>
   );
