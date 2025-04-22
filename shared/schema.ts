@@ -1,6 +1,7 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, foreignKey } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -67,3 +68,15 @@ export type InsertPrediction = z.infer<typeof insertPredictionSchema>;
 export type User = typeof users.$inferSelect;
 export type Prediction = typeof predictions.$inferSelect;
 export type ActivationCodeType = typeof activationCodes.$inferSelect;
+
+// Define relations
+export const usersRelations = relations(users, ({ many }) => ({
+  activationCodes: many(activationCodes)
+}));
+
+export const activationCodesRelations = relations(activationCodes, ({ one }) => ({
+  user: one(users, {
+    fields: [activationCodes.usedById],
+    references: [users.id]
+  })
+}));
